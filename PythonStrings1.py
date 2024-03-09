@@ -11,6 +11,49 @@
 # Task 3: Username Generation
 # Create a script that generates a username for each new user. The username should be a combination of the first three letters of their first name and the first three letters of their last name. If the name is shorter than three letters, use the full name. Ensure all usernames are in lowercase.
 
+def format_customer_name(name):   
+    return name.title()
+
+formatted_name = format_customer_name("jOhN dOe")
+print(formatted_name)
+
+
+def check_email_list(emails):   
+    for email in emails:
+        if "@" in email and "." in email.split("@")[-1]:
+            continue
+        else:
+            print(f"Review email: {email}")
+
+email_list = [
+    "user@example.com",
+    "invalidemail.com",
+    "another.user@website",
+    "valid.email@example.co.uk",
+    "noatsymbol.net",
+    "no.dot@com"
+]
+check_email_list(email_list)
+
+def generate_username(first_name, last_name):
+    # Extract the first three letters of the first name, or the full name if it's shorter than three letters
+    first_part = first_name[:3]
+    # Extract the first three letters of the last name, or the full name if it's shorter than three letters
+    last_part = last_name[:3]
+    # Combine the parts and convert to lowercase
+    username = (first_part + last_part).lower()
+    
+    return username
+
+usernames = [
+    generate_username('Alexander', 'Hamilton'),
+    generate_username('El', 'Burr'),
+    generate_username('Thomas', 'Jefferson')
+]
+
+for username in usernames:
+    print(username)
+
 # 2. Product Review Analysis
 # Objective:
 # The aim of this assignment is to extract insights from product reviews by using string manipulation to categorize and summarize customer feedback for a SaaS product.
@@ -24,6 +67,92 @@
 # Task 3: Review Summary
 # Implement a script that takes the first 50 characters of a review and appends "…" to create a summary. Ensure that the summary does not cut off in the middle of a word.
 
+def highlight_keywords_in_reviews(reviews, keywords):
+    
+    for review in reviews:
+        modified_review = review
+        for keyword in keywords:
+            # Check if the keyword is in the review
+            if keyword in review.lower():
+                # Replace keyword with uppercase version
+                modified_review = modified_review.replace(keyword, keyword.upper())
+                modified_review = modified_review.replace(keyword.capitalize(), keyword.upper())
+        print(modified_review)
+
+reviews = [
+    "I thought the product was good but could be improved.",
+    "This is an excellent product, and I highly recommend it!",
+    "Unfortunately, my experience was bad due to a manufacturing defect.",
+    "The quality is average, not what I expected at this price point.",
+    "Received a damaged item, poor service from the company."
+]
+
+keywords = {"good", "excellent", "bad", "poor", "average"}
+
+highlight_keywords_in_reviews(reviews, keywords)
+
+def tally_sentiment(reviews, positive_words, negative_words):
+
+    results = []
+
+    for review in reviews:
+        # Initialize counts for this review
+        positive_count = 0
+        negative_count = 0
+        # Normalize the review to lowercase to make comparison case-insensitive
+        words = review.lower().split()
+        # Count positive and negative words
+        for word in words:
+            if word in positive_words:
+                positive_count += 1
+            elif word in negative_words:
+                negative_count += 1
+        
+        results.append((positive_count, negative_count))
+
+    return results
+
+reviews = [
+    "I thought the product was good and the quality excellent.",
+    "This is an excellent product, and I highly recommend it!",
+    "Unfortunately, my experience was bad due to a manufacturing defect.",
+    "The quality is average, not what I expected at this price point.",
+    "Received a damaged item, poor service from the company."
+]
+
+positive_words = {"good", "excellent", "recommend", "highly", "loved"}
+negative_words = {"bad", "poor", "damaged", "defect", "average"}
+
+sentiment_counts = tally_sentiment(reviews, positive_words, negative_words)
+
+for review, (pos_count, neg_count) in zip(reviews, sentiment_counts):
+    print(f"Review: \"{review}\" \nPositive words: {pos_count}, Negative words: {neg_count}\n")
+
+def summarize_review(review):
+    # Check if the review is shorter than or exactly 50 characters
+    if len(review) <= 50:
+        return review
+    # If the review is longer than 50 characters, find the last space within the first 50 characters
+    cutoff_point = review[:50].rfind(' ')
+    # If there is no space, use the full 50 characters; otherwise, cut off at the last complete word
+    if cutoff_point == -1:
+        summary = review[:50]
+    else:
+        summary = review[:cutoff_point]
+    
+    return summary + "…"
+
+reviews = [
+    "I thought the product was good and the quality excellent. Really loved it!",
+    "This is an excellent product, and I highly recommend it! Five stars.",
+    "Unfortunately, my experience was bad due to a manufacturing defect. Not happy.",
+    "The quality is average, not what I expected at this price point. Could be better.",
+    "Received a damaged item, poor service from the company. Very disappointed."
+]
+
+for review in reviews:
+    print(summarize_review(review))
+
 # 3. Log File Formatter
 # Objective:
 # The aim of this assignment is to format and extract information from raw log files generated by a SaaS application to improve readability and analysis.
@@ -36,6 +165,43 @@
 
 # Task 3: Log Summary
 # Develop a script that creates a summary of the log file, including the total number of entries, the number of error messages, and the number of unique timestamps in the file.
+
+def extract_timestamps(log_entries):
+    timestamps = [entry.split(']')[0][1:] for entry in log_entries]
+    return timestamps
+
+log_entries = [
+    "[2023-03-15 10:00:00] INFO: User login successful.",
+    "[2023-03-15 10:05:00] ERROR: Failed to connect to database.",
+    "[2023-03-15 10:10:00] INFO: Data backup completed successfully."
+]
+
+timestamps = extract_timestamps(log_entries)
+print("Extracted Timestamps:")
+for timestamp in timestamps:
+    print(timestamp)
+
+
+def identify_errors(log_entries):
+    for entry in log_entries:
+        if "ERROR:" in entry:
+            timestamp = entry.split(']')[0][1:]
+            error_message = entry.split("ERROR:")[1].strip()
+            print(f"{timestamp} - ERROR: {error_message}")
+
+print("\nIdentified Error Messages:")
+identify_errors(log_entries)
+
+
+def log_summary(log_entries):
+    total_entries = len(log_entries)
+    error_count = sum(1 for entry in log_entries if "ERROR:" in entry)
+    unique_timestamps = len(set(extract_timestamps(log_entries)))
+
+    print(f"Log Summary:\nTotal Entries: {total_entries}\nError Messages: {error_count}\nUnique Timestamps: {unique_timestamps}")
+
+print("\nLog File Summary:")
+log_summary(log_entries)
 
 # 4. Configuration File Validator
 # Objective:
